@@ -62,11 +62,14 @@ populateMarker = function (selectedMap) {
   var intermediate = getJsonFromUrl()
   if ( isFinite(intermediate.lat) && isFinite(intermediate.lng) ){
     LS.Receive.message = intermediate.M
-    LS.Receive.lat = intermediate.lat + 0
-    LS.Receive.lng = intermediate.lng + 0
+    LS.Receive.lat = + intermediate.lat 
+    console.log( intermediate.lat )
+    LS.Receive.lng = + intermediate.lng 
+    console.log( intermediate.lng )
     var text = '<table><tr><td><p>' + LS.Receive.message + '</p></td><td><p>Lat: ' + LS.Receive.lat + '</p><p>Lng: ' + LS.Receive.lng + '</p></td></tr></table>'
 //    LS.Receive.Popup.setContent(LS.Receive.message)
     LS.Receive.Marker = L.marker( [ LS.Receive.lat , LS.Receive.lng] , {icon:receiveIcon})
+    console.log( LS.Receive.Marker._latlng )
     LS.Receive.Marker.bindPopup(LS.Receive.message) 
     LS.Receive.Marker.addTo(selectedMap)
     LS.Receive.Marker.openPopup()  
