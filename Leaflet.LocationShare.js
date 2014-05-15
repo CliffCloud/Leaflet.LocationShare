@@ -5,20 +5,28 @@ LS.Send = {}
 LS.Send.Marker = {}
 LS.Send.Popup = L.popup().setContent('<div><input id="sendText" type="text" style="border-color:#a7a7a7;border:solid;border-width:2px;border-radius:5px;height:30px;" size="30" onkeyup="L.LocShare.Send.UpdateMessage( this )" placeholder="enter your message"/></div><div style="height:35px;"><button style="border-style:solid;border-radius:5px;border-color:#3d94f6;float:right;color:white;background-color:#3d94f6;height:35px;font-size:15px;line-height:3px;margin:5px;" onclick="copyPrompt()">get url</button></div></div>')
 LS.Receive = {}
-LS.Receive.Marker = L.marker()
+LS.Receive.Marker = {}
 LS.Receive.Popup = L.popup()
+var sendIcon = L.icon({
+  iconUrl: "https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/IconMapSend.png",
+  iconSize:     [50, 50], // size of the icon
+  iconAnchor:   [25, 50], // point of the icon which will correspond to marker's location
+  popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
+})
+
+receiveIcon = L.icon({
+  iconUrl: "https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/IconMapReceive.png",
+  iconSize:     [50, 50], // size of the icon
+  iconAnchor:   [25, 50], // point of the icon which will correspond to marker's location
+  popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
+})
 
 L.Map.addInitHook(function () {
   this.sharelocationControl = new L.Control.ShareLocation();
   this.addControl(this.sharelocationControl);
-  populateMarker()
-  this.receivedPopup = LS.Receive.Popup;
-
-  if (this.receivedPopup._latlng){
-    this.whenReady( function(){
-      this.receivedPopup.openOn(this);
-    })
-  }
+  this.whenReady( function(){
+    populateMarker(this);
+  })
 });
 
 L.Control.ShareLocation = L.Control.extend({
@@ -49,18 +57,19 @@ L.Control.ShareLocation = L.Control.extend({
     },
 });
 
-populateMarker = function () {
+populateMarker = function (selectedMap) {
   // replace the line below with the results of any Url parser
   var intermediate = getJsonFromUrl()
-  
   if ( isFinite(intermediate.lat) && isFinite(intermediate.lng) ){
-    console.log('inside populate marker. passed: isFinite(intermediate.lat) && isFinite(intermediate.lng) line 55')
     LS.Receive.message = intermediate.M
-    LS.Receive.lat = intermediate.lat
-    LS.Receive.lng = intermediate.lng
+    LS.Receive.lat = intermediate.lat + 0
+    LS.Receive.lng = intermediate.lng + 0
     var text = '<table><tr><td><p>' + LS.Receive.message + '</p></td><td><p>Lat: ' + LS.Receive.lat + '</p><p>Lng: ' + LS.Receive.lng + '</p></td></tr></table>'
-    LS.Receive.Popup.setContent(LS.Receive.message)
-    LS.Receive.Popup.setLatLng([ LS.Receive.lat , LS.Receive.lng])  
+//    LS.Receive.Popup.setContent(LS.Receive.message)
+    LS.Receive.Marker = L.marker( [ LS.Receive.lat , LS.Receive.lng] , {icon:receiveIcon})
+    LS.Receive.Marker.bindPopup(LS.Receive.message) 
+    LS.Receive.Marker.addTo(selectedMap)
+    LS.Receive.Marker.openPopup()  
   } 
 }
 
@@ -94,7 +103,7 @@ function placeMarker( selectedMap ){
 //  if ( isFinite(test.lat) && isFinite(test.lng) ){
     if (!LS.Send.Marker._latlng ) {
       console.log('if (!LS.Send.Marker._latlng ) { passed!  line 95')
-      LS.Send.Marker = L.marker( selectedMap.getCenter() , {draggable: true} );
+      LS.Send.Marker = L.marker( selectedMap.getCenter() , {draggable: true,icon: sendIcon} );
       setSendValues( selectedMap.getCenter() )
       LS.Send.Marker.on('dragend', function(event) {
         setSendValues( event.target.getLatLng());
