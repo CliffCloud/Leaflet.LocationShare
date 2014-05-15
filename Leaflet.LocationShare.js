@@ -33,7 +33,7 @@ L.Control.ShareLocation = L.Control.extend({
         this.link = L.DomUtil.create('a', 'leaflet-bar-part', container);
 //        var userIcon = L.DomUtil.create('i', 'fa fa-users fa-lg', this.link);
         var userIcon = L.DomUtil.create('img' , 'img-responsive' , this.link);
-        userIcon.src = 'cliffcloud.github.io/Leaflet.LocationShare/IconLocShare.png'
+        userIcon.src = 'https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/IconLocShare.png'
         this.link.href = '#';
 
         L.DomEvent.on(this.link, 'click', this._click, this);
