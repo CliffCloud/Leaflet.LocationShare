@@ -1,0 +1,122 @@
+
+L.LocShare = {}
+var LS = L.LocShare
+LS.Send = {}
+LS.Send.Marker = {}
+LS.Send.Popup = L.popup().setContent('<div><input id="sendText" type="text" style="border-color:#a7a7a7;border:solid;border-width:2px;border-radius:5px;height:30px;" size="30" onkeyup="L.LocShare.Send.UpdateMessage( this )" placeholder="enter your message"/></div><div style="height:35px;"><button style="border-style:solid;border-radius:5px;border-color:#3d94f6;float:right;color:white;background-color:#3d94f6;height:35px;font-size:15px;line-height:3px;margin:5px;" onclick="copyPrompt()">get url</button></div></div>')
+LS.Receive = {}
+LS.Receive.Marker = L.marker()
+LS.Receive.Popup = L.popup()
+
+L.Map.addInitHook(function () {
+  this.sharelocationControl = new L.Control.ShareLocation();
+  this.addControl(this.sharelocationControl);
+  populateMarker()
+  this.receivedPopup = LS.Receive.Popup;
+
+  if (this.receivedPopup._latlng){
+    this.whenReady( function(){
+      this.receivedPopup.openOn(this);
+    })
+  }
+});
+
+L.Control.ShareLocation = L.Control.extend({
+    options: {
+        position: 'topleft',
+        title: 'Share Location'
+    },
+
+    onAdd: function () {
+        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+
+        this.link = L.DomUtil.create('a', 'leaflet-bar-part', container);
+//        var userIcon = L.DomUtil.create('i', 'fa fa-users fa-lg', this.link);
+        var userIcon = L.DomUtil.create('img' , 'img-responsive' , this.link);
+        userIcon.src = 'cliffcloud.github.io/Leaflet.LocationShare/IconLocShare.png'
+        this.link.href = '#';
+
+        L.DomEvent.on(this.link, 'click', this._click, this);
+
+        return container;
+    },
+
+    _click: function (e) {
+      L.DomEvent.stopPropagation(e);
+      L.DomEvent.preventDefault(e);
+//        TODO: get location and putout url
+      placeMarker( this._map )
+    },
+});
+
+populateMarker = function () {
+  // replace the line below with the results of any Url parser
+  var intermediate = getJsonFromUrl()
+  
+  if ( isFinite(intermediate.lat) && isFinite(intermediate.lng) ){
+    console.log('inside populate marker. passed: isFinite(intermediate.lat) && isFinite(intermediate.lng) line 55')
+    LS.Receive.message = intermediate.M
+    LS.Receive.lat = intermediate.lat
+    LS.Receive.lng = intermediate.lng
+    var text = '<table><tr><td><p>' + LS.Receive.message + '</p></td><td><p>Lat: ' + LS.Receive.lat + '</p><p>Lng: ' + LS.Receive.lng + '</p></td></tr></table>'
+    LS.Receive.Popup.setContent(LS.Receive.message)
+    LS.Receive.Popup.setLatLng([ LS.Receive.lat , LS.Receive.lng])  
+  } 
+}
+
+function getJsonFromUrl () {
+  var params = {}
+  params.query = location.search.substr(1);
+  params.parsed = decodeURIComponent( params.query )
+  params.data = params.parsed.split("&");
+  params.result = {};
+  for(var i=0; i<params.data.length; i++) {
+    var item = params.data[i].split("=");
+    params.result[item[0]] = item[1];
+  }
+  // This will return all of the data in the query parameters in object form
+  // getJsonFromUrl() only splits on ampersand and equals -- jquery can do better
+  // But so could you!! submit a pull request if you've got one!
+  return params.result;
+}
+
+
+function copyPrompt() {
+  window.prompt("Send this location with: Ctrl+C, Enter", '' + 
+                location.origin + location.pathname + '?' + 
+                'lat' + '=' + LS.Send.lat + '&' +
+                'lng' + '=' + LS.Send.lng + '&' +
+                 'M' + '=' +  LS.Send.Message);
+}
+
+function placeMarker( selectedMap ){
+//  var test = LS.Send.Marker._latlng
+//  if ( isFinite(test.lat) && isFinite(test.lng) ){
+    if (!LS.Send.Marker._latlng ) {
+      console.log('if (!LS.Send.Marker._latlng ) { passed!  line 95')
+      LS.Send.Marker = L.marker( selectedMap.getCenter() , {draggable: true} );
+      setSendValues( selectedMap.getCenter() )
+      LS.Send.Marker.on('dragend', function(event) {
+        setSendValues( event.target.getLatLng());
+        LS.Send.Marker.openPopup();
+      });
+      LS.Send.Marker.bindPopup(LS.Send.Popup);
+      LS.Send.Marker.addTo(selectedMap);
+    } else {
+      LS.Send.Marker.setLatLng( selectedMap.getCenter() )
+    }
+    //selectedMap.setView( location , 16 )
+    LS.Send.Marker.openPopup();
+//  }
+};
+
+LS.Send.UpdateMessage = function( text ){
+  var encodedForUrl = encodeURIComponent( text.value );
+  LS.Send.Message = encodedForUrl
+}
+
+function setSendValues( result ){
+  LS.Send.lat = result.lat;
+  LS.Send.lng = result.lng; 
+}
+  
