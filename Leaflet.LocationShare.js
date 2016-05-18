@@ -8,14 +8,14 @@ LS.Receive = {}
 LS.Receive.Marker = {}
 LS.Receive.Popup = L.popup()
 var sendIcon = L.icon({
-  iconUrl: "https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconMapSend.png",
+  iconUrl: "//raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconMapSend.png",
   iconSize:     [50, 50], // size of the icon
   iconAnchor:   [25, 50], // point of the icon which will correspond to marker's location
   popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
 })
 
 receiveIcon = L.icon({
-  iconUrl: "https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconMapReceive.png",
+  iconUrl: "//raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconMapReceive.png",
   iconSize:     [50, 50], // size of the icon
   iconAnchor:   [25, 50], // point of the icon which will correspond to marker's location
   popupAnchor:  [0, -30] // point from which the popup should open relative to the iconAnchor
@@ -41,7 +41,7 @@ L.Control.ShareLocation = L.Control.extend({
         this.link = L.DomUtil.create('a', 'leaflet-bar-part', container);
 //        var userIcon = L.DomUtil.create('i', 'fa fa-users fa-lg', this.link);
         var userIcon = L.DomUtil.create('img' , 'img-responsive' , this.link);
-        userIcon.src = 'https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconLocShare.png'
+        userIcon.src = '//raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconLocShare.png'
         this.link.href = '#';
 
         L.DomEvent.on(this.link, 'click', this._click, this);
@@ -62,18 +62,18 @@ populateMarker = function (selectedMap) {
   var intermediate = getJsonFromUrl()
   if ( isFinite(intermediate.lat) && isFinite(intermediate.lng) ){
     LS.Receive.message = intermediate.M
-    LS.Receive.lat = + intermediate.lat 
+    LS.Receive.lat = + intermediate.lat
     console.log( intermediate.lat )
-    LS.Receive.lng = + intermediate.lng 
+    LS.Receive.lng = + intermediate.lng
     console.log( intermediate.lng )
     var text = '<table><tr><td><p>' + LS.Receive.message + '</p></td><td><p>Lat: ' + LS.Receive.lat + '</p><p>Lng: ' + LS.Receive.lng + '</p></td></tr></table>'
 //    LS.Receive.Popup.setContent(LS.Receive.message)
     LS.Receive.Marker = L.marker( [ LS.Receive.lat , LS.Receive.lng] , {icon:receiveIcon})
     console.log( LS.Receive.Marker._latlng )
-    LS.Receive.Marker.bindPopup(LS.Receive.message) 
+    LS.Receive.Marker.bindPopup(LS.Receive.message)
     LS.Receive.Marker.addTo(selectedMap)
-    LS.Receive.Marker.openPopup()  
-  } 
+    LS.Receive.Marker.openPopup()
+  }
 }
 
 function getJsonFromUrl () {
@@ -94,8 +94,8 @@ function getJsonFromUrl () {
 
 
 function copyPrompt() {
-  window.prompt("Send this location with: Ctrl+C, Enter", '' + 
-                location.origin + location.pathname + '?' + 
+  window.prompt("Send this location with: Ctrl+C, Enter", '' +
+                location.origin + location.pathname + '?' +
                 'lat' + '=' + LS.Send.lat + '&' +
                 'lng' + '=' + LS.Send.lng + '&' +
                  'M' + '=' +  LS.Send.Message);
@@ -129,6 +129,6 @@ LS.Send.UpdateMessage = function( text ){
 
 function setSendValues( result ){
   LS.Send.lat = result.lat;
-  LS.Send.lng = result.lng; 
+  LS.Send.lng = result.lng;
 }
-  
+
