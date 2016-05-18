@@ -32,14 +32,14 @@ L.Map.addInitHook(function () {
 L.Control.ShareLocation = L.Control.extend({
     options: {
         position: 'topleft',
-        title: 'Share Location'
+        title: 'share location'
     },
 
     onAdd: function () {
         var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
         this.link = L.DomUtil.create('a', 'leaflet-bar-part', container);
-//        var userIcon = L.DomUtil.create('i', 'fa fa-users fa-lg', this.link);
+        this.link.title = this.options.title;
         var userIcon = L.DomUtil.create('img' , 'img-responsive' , this.link);
         userIcon.src = 'https://raw.githubusercontent.com/CliffCloud/Leaflet.LocationShare/master/dist/images/IconLocShare.png'
         this.link.href = '#';
@@ -52,7 +52,6 @@ L.Control.ShareLocation = L.Control.extend({
     _click: function (e) {
       L.DomEvent.stopPropagation(e);
       L.DomEvent.preventDefault(e);
-//        TODO: get location and putout url
       placeMarker( this._map )
     },
 });
