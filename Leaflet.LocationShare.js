@@ -45,6 +45,7 @@ L.Control.ShareLocation = L.Control.extend({
         userIcon.alt = '';
         userIcon.setAttribute('role', 'presentation');
         this.link.href = '#';
+        this.link.setAttribute('role', 'button');
 
         L.DomEvent.on(this.link, 'click', this._click, this);
 
